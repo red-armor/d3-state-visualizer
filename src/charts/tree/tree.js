@@ -149,6 +149,16 @@ export default function(DOMNode, options = {}) {
     }
   }
 
+  function foldTree(tree) {
+    if(tree.children) {
+      tree.children.forEach(node => {
+        node._children = node.children
+        foldTree(node)
+        node.children = null
+      })
+    }
+  }
+
   return function renderChart(nextState = tree || state) {
     data = !tree ? map2tree(nextState, {key: rootKeyName, pushMethod}) : nextState
 
@@ -173,6 +183,8 @@ export default function(DOMNode, options = {}) {
         }) : null
     )
 
+    // 把树折叠
+    foldTree(data)
     /*eslint-disable*/
     update()
     /*eslint-enable*/
